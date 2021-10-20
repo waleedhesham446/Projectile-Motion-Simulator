@@ -131,6 +131,44 @@
             border-radius: 50%;
             z-index: -1;
         }
+
+        .yDist {
+            position: absolute;
+            transform: translate(-50%, -110%);
+            background-color: black;
+            color: white;
+            padding: 5px;
+            font-size: 1.1em;
+        }
+
+        .yDist::before {
+            content: "";
+            position: absolute;
+            border: 10px solid black;
+            border-color: black transparent transparent transparent;
+            left: 50%;
+            bottom: 0;
+            transform: translate(-50%, 100%);
+        }
+
+        .xDist {
+            position: absolute;
+            transform: translate(75%, 50%);
+            background-color: black;
+            color: white;
+            padding: 5px;
+            font-size: 1.1em;
+        }
+
+        .xDist::before {
+            content: "";
+            position: absolute;
+            border: 10px solid black;
+            border-color: transparent black transparent transparent;
+            left: 0;
+            bottom: 50%;
+            transform: translate(-100%, calc(-1px + 50%));
+        }
     </style>
 
 </head>
@@ -160,6 +198,7 @@
             g;
             horizontalRange;
             maxHeight;
+            actualHorizontalRange;
 
 
             constructor(element, x, y) {
@@ -173,8 +212,18 @@
                     if(this.x >= this.horizontalRange) {
                         if(this.y > 0)
                             this.horizontalRange *= 2;
-                        else
+                        else{
+
                             clearInterval(intervalHorizontal);
+
+                            let xDist = document.createElement('div');
+                            let text = document.createTextNode(this.actualHorizontalRange);
+                            xDist.appendChild(text);
+                            xDist.classList.add('xDist');
+                            xDist.style.left = this.x + 'px';
+                            xDist.style.bottom = this.y + 'px';
+                            this.element.parentElement.appendChild(xDist);
+                        }
                     }
 
                     if(this.x%25 === 0){
@@ -202,6 +251,14 @@
                         
                         if(this.y >= this.maxHeight && isNaN(velocity)){
                             clearTimeout(oneInterval);
+
+                            let yDist = document.createElement('div');
+                            let text = document.createTextNode(this.maxHeight);
+                            yDist.appendChild(text);
+                            yDist.classList.add('yDist');
+                            yDist.style.left = this.x + 'px';
+                            yDist.style.bottom = this.y + 'px';
+                            this.element.parentElement.appendChild(yDist);
                             
                             resolve();
                         }
@@ -269,6 +326,7 @@
 
                 projectileObj.maxHeight = maxHeight;
                 projectileObj.horizontalRange = horizontalRange;
+                projectileObj.actualHorizontalRange = horizontalRange;
                 
                 if(Math.floor(vx) > 0) projectileObj.moveHorizontal(vx);
                 projectileObj.moveVertical(vy0);
@@ -292,6 +350,10 @@
             while(elements.length > 0){
                 elements[0].parentNode.removeChild(elements[0]);
             }
+            let yDist = document.getElementsByClassName('yDist');
+            yDist[0].parentNode.removeChild(yDist[0]);
+            let xDist = document.getElementsByClassName('xDist');
+            xDist[0].parentNode.removeChild(xDist[0]);
         }
 
     </script>
